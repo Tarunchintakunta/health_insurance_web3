@@ -1,7 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    hmr: {
+      overlay: false
+    }
+  },
+  css: {
+    // Don't process CSS with PostCSS since we're using CDN
+    postcss: false
+  }
 })
