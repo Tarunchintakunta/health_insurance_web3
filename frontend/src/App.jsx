@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Web3Provider } from './utils/Web3Context';
@@ -13,50 +14,23 @@ import PaymentConfirmationPage from './pages/PaymentConfirmationPage';
 import DashboardPage from './pages/DashboardPage';
 import AboutPage from './pages/AboutPage';
 
-// Protected Route component
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('isWalletConnected') === 'true';
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
-  }
-  
-  return children;
-};
-
 function App() {
   return (
     <Web3Provider>
       <Router>
-        <div className="flex flex-col min-h-screen">
+        <div style={{ 
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '100vh',
+          backgroundColor: '#f8f9fa'
+        }}>
           <Header />
-          <main className="flex-grow">
+          <main style={{ flex: '1 0 auto' }}>
             <Routes>
               <Route path="/" element={<LandingPage />} />
-              <Route 
-                path="/insurance" 
-                element={
-                  <ProtectedRoute>
-                    <InsuranceSelectionPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/payment" 
-                element={
-                  <ProtectedRoute>
-                    <PaymentConfirmationPage />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <DashboardPage />
-                  </ProtectedRoute>
-                } 
-              />
+              <Route path="/insurance" element={<InsuranceSelectionPage />} />
+              <Route path="/payment" element={<PaymentConfirmationPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
