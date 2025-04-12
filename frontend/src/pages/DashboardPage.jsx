@@ -1,8 +1,8 @@
+// src/pages/DashboardPage.jsx
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useWeb3 } from '../utils/Web3Context';
-import Button from '../components/Button';
 import Loading from '../components/Loading';
 
 const DashboardPage = () => {
@@ -168,150 +168,307 @@ const DashboardPage = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Your Insurance Dashboard</h1>
-          <p className="text-gray-600 mt-2">
-            Manage your active policies, view your coverage details, and renew your plans.
+    <div style={{ padding: '2rem 1rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#333' }}>
+        Your Insurance Dashboard
+      </h1>
+      <p style={{ color: '#6c757d', marginBottom: '2rem' }}>
+        Manage your active policies, view your coverage details, and renew your plans.
+      </p>
+      
+      {error && (
+        <div style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '1rem',
+          borderRadius: '4px',
+          marginBottom: '1.5rem',
+          border: '1px solid #f5c6cb'
+        }}>
+          {error}
+        </div>
+      )}
+      
+      {/* Tabs */}
+      <div style={{ 
+        borderBottom: '1px solid #dee2e6',
+        marginBottom: '1.5rem',
+        display: 'flex',
+        gap: '2rem'
+      }}>
+        <button
+          onClick={() => setActiveTab('active')}
+          style={{
+            padding: '1rem 0.25rem',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'active' ? '2px solid #4CAF50' : '2px solid transparent',
+            color: activeTab === 'active' ? '#4CAF50' : '#6c757d',
+            fontWeight: '500',
+            cursor: 'pointer'
+          }}
+        >
+          Active Policies
+        </button>
+        <button
+          onClick={() => setActiveTab('expired')}
+          style={{
+            padding: '1rem 0.25rem',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'expired' ? '2px solid #4CAF50' : '2px solid transparent',
+            color: activeTab === 'expired' ? '#4CAF50' : '#6c757d',
+            fontWeight: '500',
+            cursor: 'pointer'
+          }}
+        >
+          Expired Policies
+        </button>
+        <button
+          onClick={() => setActiveTab('cancelled')}
+          style={{
+            padding: '1rem 0.25rem',
+            background: 'none',
+            border: 'none',
+            borderBottom: activeTab === 'cancelled' ? '2px solid #4CAF50' : '2px solid transparent',
+            color: activeTab === 'cancelled' ? '#4CAF50' : '#6c757d',
+            fontWeight: '500',
+            cursor: 'pointer'
+          }}
+        >
+          Cancelled Policies
+        </button>
+      </div>
+      
+      {/* Policies List */}
+      {filteredPolicies.length === 0 ? (
+        <div style={{
+          backgroundColor: 'white',
+          padding: '3rem',
+          borderRadius: '8px',
+          textAlign: 'center',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+        }}>
+          <div style={{
+            width: '64px',
+            height: '64px',
+            backgroundColor: '#f8f9fa',
+            color: '#adb5bd',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: '0 auto 1.5rem',
+            fontSize: '2rem'
+          }}>
+            📄
+          </div>
+          <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#333' }}>
+            No policies found
+          </h3>
+          <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>
+            {activeTab === 'active' && "You don't have any active insurance policies."}
+            {activeTab === 'expired' && "You don't have any expired policies that need renewal."}
+            {activeTab === 'cancelled' && "You don't have any cancelled policies."}
           </p>
-        </div>
-        
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
-          </div>
-        )}
-        
-        {/* Tabs */}
-        <div className="mb-6 border-b border-gray-200">
-          <nav className="flex space-x-8">
-            <button
-              onClick={() => setActiveTab('active')}
-              className={`py-4 px-1 font-medium text-sm border-b-2 ${
-                activeTab === 'active'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Active Policies
-            </button>
-            <button
-              onClick={() => setActiveTab('expired')}
-              className={`py-4 px-1 font-medium text-sm border-b-2 ${
-                activeTab === 'expired'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Expired Policies
-            </button>
-            <button
-              onClick={() => setActiveTab('cancelled')}
-              className={`py-4 px-1 font-medium text-sm border-b-2 ${
-                activeTab === 'cancelled'
-                  ? 'border-primary-500 text-primary-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              Cancelled Policies
-            </button>
-          </nav>
-        </div>
-        
-        {/* Policies List */}
-        {filteredPolicies.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <svg className="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No policies found</h3>
-            <p className="text-gray-500 mb-6">
-              {activeTab === 'active' && "You don't have any active insurance policies."}
-              {activeTab === 'expired' && "You don't have any expired policies that need renewal."}
-              {activeTab === 'cancelled' && "You don't have any cancelled policies."}
-            </p>
-            <Link to="/insurance">
-              <Button variant="primary">Browse Insurance Plans</Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <ul className="divide-y divide-gray-200">
-              {filteredPolicies.map((policy) => (
-                <li key={policy.id} className="p-6">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-                    <div className="mb-4 md:mb-0">
-                      <div className="flex items-center">
-                        <h3 className="text-lg font-semibold text-gray-800">{policy.planName}</h3>
-                        <span className="ml-3 bg-primary-100 text-primary-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                          {policy.planCategory}
-                        </span>
-                      </div>
-                      <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
-                        <div>
-                          <span className="text-gray-500">Policy ID:</span> #{policy.id}
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Premium:</span> {policy.premium} ETH
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Coverage:</span> {policy.numberOfPeopleCovered} {policy.numberOfPeopleCovered === 1 ? 'person' : 'people'}
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Status:</span> 
-                          {policy.active && !policy.isExpired && (
-                            <span className="text-green-600 font-medium">Active</span>
-                          )}
-                          {policy.active && policy.isExpired && (
-                            <span className="text-red-600 font-medium">Expired</span>
-                          )}
-                          {!policy.active && (
-                            <span className="text-gray-600 font-medium">Cancelled</span>
-                          )}
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Start Date:</span> {formatDate(policy.startDate)}
-                        </div>
-                        <div>
-                          <span className="text-gray-500">End Date:</span> {formatDate(policy.endDate)}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
-                      {policy.active && policy.isExpired && (
-                        <Button 
-                          onClick={() => handleRenewPolicy(policy.id, policy.premium)}
-                          variant="success"
-                          size="sm"
-                        >
-                          Renew Policy
-                        </Button>
-                      )}
-                      {policy.active && !policy.isExpired && (
-                        <Button 
-                          onClick={() => handleCancelPolicy(policy.id)}
-                          variant="danger"
-                          size="sm"
-                        >
-                          Cancel Policy
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        
-        {/* Purchase More Button */}
-        <div className="mt-8 text-center">
-          <p className="text-gray-600 mb-4">Looking for additional coverage?</p>
           <Link to="/insurance">
-            <Button variant="primary">Browse More Insurance Plans</Button>
+            <button style={{
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '4px',
+              border: 'none',
+              fontWeight: 'bold',
+              cursor: 'pointer'
+            }}>
+              Browse Insurance Plans
+            </button>
           </Link>
         </div>
+      ) : (
+        <div style={{
+          backgroundColor: 'white',
+          borderRadius: '8px',
+          overflow: 'hidden',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+        }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead style={{ backgroundColor: '#f8f9fa' }}>
+              <tr>
+                <th style={{ 
+                  padding: '1rem',
+                  textAlign: 'left',
+                  borderBottom: '1px solid #dee2e6',
+                  color: '#6c757d',
+                  fontWeight: '500',
+                  fontSize: '0.875rem'
+                }}>
+                  PLAN DETAILS
+                </th>
+                <th style={{ 
+                  padding: '1rem',
+                  textAlign: 'left',
+                  borderBottom: '1px solid #dee2e6',
+                  color: '#6c757d',
+                  fontWeight: '500',
+                  fontSize: '0.875rem'
+                }}>
+                  COVERAGE
+                </th>
+                <th style={{ 
+                  padding: '1rem',
+                  textAlign: 'left',
+                  borderBottom: '1px solid #dee2e6',
+                  color: '#6c757d',
+                  fontWeight: '500',
+                  fontSize: '0.875rem'
+                }}>
+                  DATES
+                </th>
+                <th style={{ 
+                  padding: '1rem',
+                  textAlign: 'left',
+                  borderBottom: '1px solid #dee2e6',
+                  color: '#6c757d',
+                  fontWeight: '500',
+                  fontSize: '0.875rem'
+                }}>
+                  PREMIUM
+                </th>
+                <th style={{ 
+                  padding: '1rem',
+                  textAlign: 'left',
+                  borderBottom: '1px solid #dee2e6',
+                  color: '#6c757d',
+                  fontWeight: '500',
+                  fontSize: '0.875rem'
+                }}>
+                  STATUS
+                </th>
+                <th style={{ 
+                  padding: '1rem',
+                  textAlign: 'right',
+                  borderBottom: '1px solid #dee2e6',
+                  color: '#6c757d',
+                  fontWeight: '500',
+                  fontSize: '0.875rem'
+                }}>
+                  ACTIONS
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPolicies.map((policy) => (
+                <tr key={policy.id}>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #dee2e6' }}>
+                    <div style={{ fontWeight: '500', color: '#333' }}>{policy.planName}</div>
+                    <div style={{ fontSize: '0.875rem', color: '#6c757d' }}>{policy.planCategory}</div>
+                    <div style={{ fontSize: '0.75rem', color: '#6c757d' }}>ID: {policy.id}</div>
+                  </td>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #dee2e6' }}>
+                    <div style={{ color: '#333' }}>
+                      {policy.numberOfPeopleCovered} {policy.numberOfPeopleCovered === 1 ? 'person' : 'people'}
+                    </div>
+                  </td>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #dee2e6' }}>
+                    <div style={{ color: '#333' }}>From: {formatDate(policy.startDate)}</div>
+                    <div style={{ color: '#333' }}>To: {formatDate(policy.endDate)}</div>
+                  </td>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #dee2e6', color: '#333' }}>
+                    {policy.premium} ETH
+                  </td>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #dee2e6' }}>
+                    {policy.active && !policy.isExpired && (
+                      <span style={{ 
+                        backgroundColor: '#e8f5e9', 
+                        color: '#388e3c',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '16px',
+                        fontSize: '0.75rem',
+                        fontWeight: '500'
+                      }}>
+                        Active
+                      </span>
+                    )}
+                    {policy.active && policy.isExpired && (
+                      <span style={{ 
+                        backgroundColor: '#ffebee', 
+                        color: '#d32f2f',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '16px',
+                        fontSize: '0.75rem',
+                        fontWeight: '500'
+                      }}>
+                        Expired
+                      </span>
+                    )}
+                    {!policy.active && (
+                      <span style={{ 
+                        backgroundColor: '#f5f5f5', 
+                        color: '#757575',
+                        padding: '0.25rem 0.5rem',
+                        borderRadius: '16px',
+                        fontSize: '0.75rem',
+                        fontWeight: '500'
+                      }}>
+                        Cancelled
+                      </span>
+                    )}
+                  </td>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #dee2e6', textAlign: 'right' }}>
+                    {policy.active && policy.isExpired && (
+                      <button 
+                        onClick={() => handleRenewPolicy(policy.id, policy.premium)}
+                        style={{
+                          backgroundColor: 'transparent',
+                          color: '#4CAF50',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontWeight: '500',
+                          marginRight: '1rem'
+                        }}
+                      >
+                        Renew
+                      </button>
+                    )}
+                    {policy.active && !policy.isExpired && (
+                      <button 
+                        onClick={() => handleCancelPolicy(policy.id)}
+                        style={{
+                          backgroundColor: 'transparent',
+                          color: '#f44336',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontWeight: '500'
+                        }}
+                      >
+                        Cancel
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      
+      {/* Purchase More Button */}
+      <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+        <p style={{ color: '#6c757d', marginBottom: '1rem' }}>Looking for additional coverage?</p>
+        <Link to="/insurance">
+          <button style={{
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '4px',
+            border: 'none',
+            fontWeight: 'bold',
+            cursor: 'pointer'
+          }}>
+            Browse More Insurance Plans
+          </button>
+        </Link>
       </div>
     </div>
   );
