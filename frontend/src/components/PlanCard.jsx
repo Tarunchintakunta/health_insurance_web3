@@ -1,6 +1,6 @@
+// src/components/PlanCard.jsx
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
-import Button from './Button';
 
 const PlanCard = ({ plan, onSelect }) => {
   const [people, setPeople] = useState(1);
@@ -41,100 +41,92 @@ const PlanCard = ({ plan, onSelect }) => {
     }
   };
   
-  // Get icon based on category
-  const getIcon = () => {
-    switch (plan.category) {
-      case 'Dental':
-        return (
-          <svg className="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        );
-      case 'General Health':
-        return (
-          <svg className="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        );
-      case 'Vision':
-        return (
-          <svg className="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-        );
-      case 'Preventative Care':
-        return (
-          <svg className="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-        );
-      default:
-        return (
-          <svg className="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        );
-    }
-  };
-  
   return (
-    <div className={`bg-white rounded-lg shadow-lg overflow-hidden border-2 ${isSelected ? 'border-primary-500' : 'border-transparent'} transition-all duration-200`}>
-      <div className="p-6">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
-            {getIcon()}
-            <h3 className="text-xl font-semibold text-gray-800">{plan.name}</h3>
-          </div>
-          <div className="bg-primary-100 text-primary-800 px-3 py-1 rounded-full text-sm font-medium">
-            {plan.category}
-          </div>
-        </div>
-        
-        <p className="mt-4 text-gray-600">{plan.description}</p>
-        
-        <div className="mt-6 border-t border-b border-gray-200 py-4">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm text-gray-500">Base Premium</p>
-              <p className="text-lg font-semibold text-gray-800">{parseFloat(basePremium).toFixed(5)} ETH</p>
-            </div>
-            <div>
-              <label htmlFor={`people-${plan.id}`} className="block text-sm text-gray-500">People Covered</label>
-              <select
-                id={`people-${plan.id}`}
-                value={people}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-              >
-                <option value={1}>1 Person</option>
-                <option value={2}>2 People</option>
-                <option value={3}>3 People</option>
-                <option value={4}>4 People</option>
-                <option value={5}>5 People</option>
-              </select>
-            </div>
-          </div>
-          
-          {people > 1 && (
-            <div className="mt-2 bg-green-50 text-green-700 px-3 py-1 rounded-md text-sm">
-              {calculateDiscount(people)}% discount applied for multiple people
-            </div>
-          )}
-        </div>
-        
-        <div className="mt-6 flex items-center justify-between">
+    <div style={{
+      border: isSelected ? '2px solid #4CAF50' : '1px solid #e9ecef',
+      borderRadius: '8px',
+      padding: '1.5rem',
+      backgroundColor: 'white',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+      transition: 'all 0.3s ease'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+        <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: '0' }}>{plan.name}</h3>
+        <span style={{ 
+          backgroundColor: '#e8f5e9', 
+          color: '#4CAF50', 
+          padding: '0.25rem 0.75rem', 
+          borderRadius: '16px',
+          fontSize: '0.875rem'
+        }}>
+          {plan.category}
+        </span>
+      </div>
+      
+      <p style={{ color: '#6c757d', marginBottom: '1.5rem' }}>{plan.description}</p>
+      
+      <div style={{ padding: '1rem 0', borderTop: '1px solid #e9ecef', borderBottom: '1px solid #e9ecef', marginBottom: '1.5rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <div>
-            <p className="text-sm text-gray-500">Total Premium</p>
-            <p className="text-2xl font-bold text-primary-600">{premium.toFixed(6)} ETH</p>
+            <p style={{ color: '#6c757d', fontSize: '0.875rem', margin: '0 0 0.25rem 0' }}>Base Premium</p>
+            <p style={{ fontWeight: 'bold', margin: 0 }}>{parseFloat(basePremium).toFixed(5)} ETH</p>
           </div>
-          <Button 
-            onClick={handleSelect}
-            variant={isSelected ? 'secondary' : 'primary'}
-          >
-            {isSelected ? 'Selected' : 'Select Plan'}
-          </Button>
+          <div>
+            <label htmlFor={`people-${plan.id}`} style={{ color: '#6c757d', fontSize: '0.875rem', display: 'block', marginBottom: '0.25rem' }}>
+              People Covered
+            </label>
+            <select
+              id={`people-${plan.id}`}
+              value={people}
+              onChange={handleChange}
+              style={{
+                padding: '0.5rem',
+                borderRadius: '4px',
+                border: '1px solid #ced4da',
+                width: '100%'
+              }}
+            >
+              <option value={1}>1 Person</option>
+              <option value={2}>2 People</option>
+              <option value={3}>3 People</option>
+              <option value={4}>4 People</option>
+              <option value={5}>5 People</option>
+            </select>
+          </div>
         </div>
+        
+        {people > 1 && (
+          <div style={{
+            backgroundColor: '#e8f5e9',
+            color: '#388e3c',
+            padding: '0.5rem',
+            borderRadius: '4px',
+            fontSize: '0.875rem'
+          }}>
+            {calculateDiscount(people)}% discount applied for multiple people
+          </div>
+        )}
+      </div>
+      
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <p style={{ color: '#6c757d', fontSize: '0.875rem', margin: '0 0 0.25rem 0' }}>Total Premium</p>
+          <p style={{ fontWeight: 'bold', fontSize: '1.25rem', color: '#4CAF50', margin: 0 }}>{premium.toFixed(6)} ETH</p>
+        </div>
+        <button 
+          onClick={handleSelect}
+          style={{
+            backgroundColor: isSelected ? '#e8f5e9' : '#4CAF50',
+            color: isSelected ? '#4CAF50' : 'white',
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          {isSelected ? 'Selected' : 'Select Plan'}
+        </button>
       </div>
     </div>
   );
