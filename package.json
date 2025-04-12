@@ -1,0 +1,16 @@
+{
+  "name": "health-insurance-dapp",
+  "version": "1.0.0",
+  "description": "Decentralized Health Insurance Application",
+  "scripts": {
+    "build": "cd frontend && npm install && npm run build",
+    "dev": "vercel dev",
+    "deploy": "vercel deploy --prod"
+  },
+  "dependencies": {
+    "ethers": "^5.7.2"
+  },
+  "devDependencies": {
+    "vercel": "^28.16.15"
+  }
+}
