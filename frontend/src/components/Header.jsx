@@ -1,3 +1,4 @@
+// src/components/Header.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useWeb3 } from '../utils/Web3Context';
@@ -5,68 +6,68 @@ import { useWeb3 } from '../utils/Web3Context';
 const Header = () => {
   const { account, balance, isConnected, connectWallet, disconnectWallet } = useWeb3();
 
-  const handleConnect = async () => {
-    try {
-      await connectWallet();
-    } catch (error) {
-      console.error('Connection error:', error);
-    }
-  };
-
   return (
-    <header className="bg-primary-800 text-white shadow-lg">
-      <div className="container mx-auto flex justify-between items-center p-4">
-        <Link to="/" className="text-2xl font-bold flex items-center">
-          <svg 
-            xmlns="http://www.w3.org/2000/svg" 
-            className="h-8 w-8 mr-2 text-secondary-400" 
-            fill="none" 
-            viewBox="0 0 24 24" 
-            stroke="currentColor"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M13 10V3L4 14h7v7l9-11h-7z" 
-            />
-          </svg>
-          <span>DeFi Health</span>
+    <header style={{
+      backgroundColor: '#4CAF50',
+      padding: '1rem',
+      color: 'white',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+    }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        maxWidth: '1200px',
+        margin: '0 auto'
+      }}>
+        <Link to="/" style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', textDecoration: 'none' }}>
+          DeFi Health Insurance
         </Link>
         
-        <nav className="hidden md:flex space-x-6">
-          <Link to="/" className="hover:text-secondary-300 transition-colors">Home</Link>
-          {isConnected && (
-            <>
-              <Link to="/insurance" className="hover:text-secondary-300 transition-colors">Insurance Plans</Link>
-              <Link to="/dashboard" className="hover:text-secondary-300 transition-colors">Dashboard</Link>
-            </>
-          )}
-          <Link to="/about" className="hover:text-secondary-300 transition-colors">About</Link>
+        <nav style={{ display: 'flex', gap: '1.5rem' }}>
+          <Link to="/" style={{ color: 'white', textDecoration: 'none' }}>Home</Link>
+          <Link to="/insurance" style={{ color: 'white', textDecoration: 'none' }}>Insurance Plans</Link>
+          <Link to="/dashboard" style={{ color: 'white', textDecoration: 'none' }}>Dashboard</Link>
+          <Link to="/about" style={{ color: 'white', textDecoration: 'none' }}>About</Link>
         </nav>
         
-        <div className="flex items-center space-x-4">
+        <div>
           {isConnected ? (
-            <div className="flex items-center space-x-4">
-              <div className="hidden md:block">
-                <div className="text-sm text-gray-300">Account</div>
-                <div className="text-secondary-300 font-mono">{`${account.substring(0, 6)}...${account.substring(account.length - 4)}`}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div>
+                <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>Account</div>
+                <div style={{ fontWeight: 'bold' }}>{`${account.substring(0, 6)}...${account.substring(account.length - 4)}`}</div>
               </div>
-              <div className="hidden md:block">
-                <div className="text-sm text-gray-300">Balance</div>
-                <div className="text-secondary-300">{parseFloat(balance).toFixed(4)} ETH</div>
+              <div>
+                <div style={{ fontSize: '0.875rem', opacity: 0.8 }}>Balance</div>
+                <div style={{ fontWeight: 'bold' }}>{parseFloat(balance).toFixed(4)} ETH</div>
               </div>
               <button 
                 onClick={disconnectWallet}
-                className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors"
+                style={{
+                  backgroundColor: '#e74c3c',
+                  color: 'white',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '4px',
+                  cursor: 'pointer'
+                }}
               >
                 Disconnect
               </button>
             </div>
           ) : (
             <button 
-              onClick={handleConnect}
-              className="bg-secondary-600 hover:bg-secondary-700 text-white py-2 px-4 rounded-md transition-colors"
+              onClick={connectWallet}
+              style={{
+                backgroundColor: 'white',
+                color: '#4CAF50',
+                border: 'none',
+                padding: '0.5rem 1rem',
+                borderRadius: '4px',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }}
             >
               Connect Wallet
             </button>
