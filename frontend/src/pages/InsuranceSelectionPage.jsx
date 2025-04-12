@@ -1,9 +1,9 @@
+// src/pages/InsuranceSelectionPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ethers } from 'ethers';
 import { useWeb3 } from '../utils/Web3Context';
 import PlanCard from '../components/PlanCard';
-import Button from '../components/Button';
 import Loading from '../components/Loading';
 
 const InsuranceSelectionPage = () => {
@@ -14,7 +14,7 @@ const InsuranceSelectionPage = () => {
   const [selectedPlans, setSelectedPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filterCategory, setFilterCategory] = useState('all');
+  const [filterCategory, setFilterCategory] = useState('All Categories');
   
   // Fetch plans from the smart contract
   useEffect(() => {
@@ -105,10 +105,10 @@ const InsuranceSelectionPage = () => {
   };
   
   // Get unique categories for filtering
-  const categories = ['all', ...new Set(plans.map(plan => plan.category))];
+  const categories = ['All Categories', ...new Set(plans.map(plan => plan.category))];
   
   // Filter plans by category
-  const filteredPlans = filterCategory === 'all' 
+  const filteredPlans = filterCategory === 'All Categories' 
     ? plans 
     : plans.filter(plan => plan.category === filterCategory);
   
@@ -117,93 +117,143 @@ const InsuranceSelectionPage = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
-      <div className="container mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800">Select Your Insurance Plans</h1>
-          <p className="text-gray-600 mt-2">
-            Choose from our range of health insurance plans to create your customized coverage package.
-          </p>
+    <div style={{ padding: '2rem 1rem', maxWidth: '1200px', margin: '0 auto' }}>
+      <h1 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '0.5rem', color: '#333' }}>
+        Select Your Insurance Plans
+      </h1>
+      <p style={{ color: '#6c757d', marginBottom: '2rem' }}>
+        Choose from our range of health insurance plans to create your customized coverage package.
+      </p>
+      
+      {error && (
+        <div style={{
+          backgroundColor: '#f8d7da',
+          color: '#721c24',
+          padding: '1rem',
+          borderRadius: '4px',
+          marginBottom: '1.5rem',
+          border: '1px solid #f5c6cb'
+        }}>
+          {error}
         </div>
-        
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-            {error}
+      )}
+      
+      {/* Category Filter */}
+      <div style={{ marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ color: '#6c757d', fontWeight: '500' }}>Filter by Category:</span>
+          {categories.map(category => (
+            <button
+              key={category}
+              onClick={() => setFilterCategory(category)}
+              style={{
+                padding: '0.5rem 1rem',
+                borderRadius: '20px',
+                border: 'none',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                cursor: 'pointer',
+                backgroundColor: filterCategory === category ? '#4CAF50' : '#e9ecef',
+                color: filterCategory === category ? 'white' : '#333'
+              }}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      {/* Plans Grid */}
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
+        gap: '1.5rem',
+        marginBottom: '2rem'
+      }}>
+        {filteredPlans.length > 0 ? (
+          filteredPlans.map(plan => (
+            <PlanCard 
+              key={plan.id} 
+              plan={plan} 
+              onSelect={handlePlanSelect} 
+            />
+          ))
+        ) : (
+          <div style={{ 
+            gridColumn: '1 / -1', 
+            textAlign: 'center', 
+            padding: '3rem', 
+            backgroundColor: 'white', 
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+          }}>
+            <p style={{ color: '#6c757d', fontSize: '1.125rem' }}>No insurance plans available in this category.</p>
           </div>
         )}
-        
-        {/* Category Filter */}
-        <div className="mb-8">
-          <div className="flex flex-wrap items-center space-x-2">
-            <span className="text-gray-700 font-medium">Filter by Category:</span>
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setFilterCategory(category)}
-                className={`px-4 py-2 rounded-full text-sm font-medium ${
-                  filterCategory === category 
-                    ? 'bg-primary-600 text-white' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {category === 'all' ? 'All Categories' : category}
-              </button>
+      </div>
+      
+      {/* Selected Plans Summary */}
+      {selectedPlans.length > 0 && (
+        <div style={{ 
+          backgroundColor: 'white', 
+          borderRadius: '8px', 
+          padding: '1.5rem', 
+          marginBottom: '2rem',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+        }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', color: '#333' }}>Selected Plans</h2>
+          
+          <div>
+            {selectedPlans.map(plan => (
+              <div key={plan.id} style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                padding: '1rem 0',
+                borderBottom: '1px solid #e9ecef'
+              }}>
+                <div>
+                  <p style={{ fontWeight: '500', color: '#333' }}>{plan.name}</p>
+                  <p style={{ fontSize: '0.875rem', color: '#6c757d' }}>
+                    {plan.people} {plan.people === 1 ? 'person' : 'people'} covered
+                  </p>
+                </div>
+                <p style={{ fontWeight: 'bold', color: '#4CAF50' }}>{plan.premium.toFixed(6)} ETH</p>
+              </div>
             ))}
           </div>
-        </div>
-        
-        {/* Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {filteredPlans.length > 0 ? (
-            filteredPlans.map(plan => (
-              <PlanCard 
-                key={plan.id} 
-                plan={plan} 
-                onSelect={handlePlanSelect} 
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-12">
-              <p className="text-gray-500 text-lg">No insurance plans available in this category.</p>
-            </div>
-          )}
-        </div>
-        
-        {/* Selected Plans Summary */}
-        {selectedPlans.length > 0 && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Selected Plans</h2>
-            
-            <div className="divide-y divide-gray-200">
-              {selectedPlans.map(plan => (
-                <div key={plan.id} className="flex justify-between items-center py-3">
-                  <div>
-                    <p className="font-medium text-gray-800">{plan.name}</p>
-                    <p className="text-sm text-gray-500">{plan.people} {plan.people === 1 ? 'person' : 'people'} covered</p>
-                  </div>
-                  <p className="font-semibold text-primary-600">{plan.premium.toFixed(6)} ETH</p>
-                </div>
-              ))}
-            </div>
-            
-            <div className="flex justify-between items-center pt-4 mt-4 border-t border-gray-200">
-              <p className="text-lg font-semibold text-gray-800">Total Premium</p>
-              <p className="text-xl font-bold text-primary-600">{calculateTotalPremium().toFixed(6)} ETH</p>
-            </div>
+          
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginTop: '1.5rem',
+            paddingTop: '1.5rem',
+            borderTop: '1px solid #e9ecef'
+          }}>
+            <p style={{ fontSize: '1.125rem', fontWeight: 'bold', color: '#333' }}>Total Premium</p>
+            <p style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#4CAF50' }}>{calculateTotalPremium().toFixed(6)} ETH</p>
           </div>
-        )}
-        
-        {/* Action Buttons */}
-        <div className="flex justify-end">
-          <Button 
-            onClick={handleProceedToPayment}
-            disabled={selectedPlans.length === 0}
-            variant={selectedPlans.length === 0 ? 'ghost' : 'primary'}
-            size="lg"
-          >
-            Proceed to Payment
-          </Button>
         </div>
+      )}
+      
+      {/* Action Buttons */}
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <button 
+          onClick={handleProceedToPayment}
+          disabled={selectedPlans.length === 0}
+          style={{
+            backgroundColor: selectedPlans.length === 0 ? '#e9ecef' : '#4CAF50',
+            color: selectedPlans.length === 0 ? '#6c757d' : 'white',
+            padding: '0.75rem 1.5rem',
+            borderRadius: '4px',
+            border: 'none',
+            fontWeight: 'bold',
+            cursor: selectedPlans.length === 0 ? 'not-allowed' : 'pointer'
+          }}
+        >
+          Proceed to Payment
+        </button>
       </div>
     </div>
   );
