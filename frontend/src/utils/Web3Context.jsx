@@ -1,3 +1,4 @@
+// src/utils/Web3Context.jsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import HealthInsuranceABI from '../contracts/HealthInsurance.json';
@@ -94,6 +95,9 @@ export const Web3Provider = ({ children }) => {
       setContract(healthInsuranceContract);
       setIsConnected(true);
       
+      // Store connection state in localStorage
+      localStorage.setItem('isWalletConnected', 'true');
+      
       return {
         account: userAddress,
         balance: formattedBalance
@@ -102,6 +106,7 @@ export const Web3Provider = ({ children }) => {
       console.error("Wallet connection error:", error);
       setError(error.message || "Failed to connect wallet");
       setIsConnected(false);
+      localStorage.removeItem('isWalletConnected');
       throw error;
     }
   };
@@ -112,12 +117,31 @@ export const Web3Provider = ({ children }) => {
     setSigner(null);
     setContract(null);
     setIsConnected(false);
+    localStorage.removeItem('isWalletConnected');
   };
+
+  // Check if user was previously connected
+  useEffect(() => {
+    const checkConnection = async () => {
+      const wasConnected = localStorage.getItem('isWalletConnected') === 'true';
+      
+      if (wasConnected && window.ethereum) {
+        try {
+          await connectWallet();
+        } catch (error) {
+          console.error("Failed to reconnect wallet:", error);
+          localStorage.removeItem('isWalletConnected');
+        }
+      }
+    };
+    
+    checkConnection();
+  }, []);
 
   // Listen for account changes
   useEffect(() => {
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', (accounts) => {
+      const handleAccountsChanged = (accounts) => {
         if (accounts.length === 0) {
           // User has disconnected their wallet
           disconnectWallet();
@@ -131,17 +155,20 @@ export const Web3Provider = ({ children }) => {
             });
           }
         }
-      });
-
-      window.ethereum.on('chainChanged', (chainId) => {
-        // Handle chain change
+      };
+      
+      const handleChainChanged = () => {
+        // Handle chain change by reloading the page
         window.location.reload();
-      });
+      };
+      
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
 
       // Cleanup
       return () => {
-        window.ethereum.removeAllListeners('accountsChanged');
-        window.ethereum.removeAllListeners('chainChanged');
+        window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+        window.ethereum.removeListener('chainChanged', handleChainChanged);
       };
     }
   }, [isConnected, provider]);
